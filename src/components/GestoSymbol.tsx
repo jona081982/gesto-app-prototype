@@ -8,21 +8,40 @@ interface GestoSymbolProps {
 }
 
 /**
- * La "o" inteligente de Gestos.
- * - Arco superior: negro/blanco (bóveda de seguridad)
- * - Arco inferior: color de vertical (empatía/solución)
- * - Punto central: color de vertical (núcleo IA)
- * - Barras laterales: color de vertical (conexión digital)
- *
- * Para Copropiedad: color = #10B981 (verde esmeralda)
+ * La "o" inteligente de Gestos — fiel al logo real.
+ * Arcos con GAP visible entre ellos (no forman un círculo cerrado).
+ * Arco superior blanco, arco inferior color de vertical.
+ * Punto central prominente. Barras laterales FUERA de los arcos.
  */
-export function GestoSymbol({ size = 32, color = '#10B981', animate = true, className = '' }: GestoSymbolProps) {
-  const r = size / 2
-  const strokeWidth = size * 0.12
-  const dotRadius = size * 0.08
-  const barWidth = size * 0.06
+export function GestoSymbol({ size = 36, color = '#10B981', animate = true, className = '' }: GestoSymbolProps) {
+  const cx = size / 2
+  const cy = size / 2
+  const r = size * 0.34
+  const strokeWidth = size * 0.13
+  const dotRadius = size * 0.12
+  const barWidth = size * 0.07
   const barHeight = size * 0.18
-  const gap = size * 0.15
+
+  const toRad = (deg: number) => (deg * Math.PI) / 180
+  const arcPoint = (angle: number) => ({
+    x: cx + r * Math.cos(toRad(angle)),
+    y: cy + r * Math.sin(toRad(angle)),
+  })
+
+  // Top arc: -150° to -30° (upper half with wide gaps on sides)
+  const topStart = arcPoint(-150)
+  const topEnd = arcPoint(-30)
+  const topPath = `M ${topStart.x} ${topStart.y} A ${r} ${r} 0 0 1 ${topEnd.x} ${topEnd.y}`
+
+  // Bottom arc: 30° to 150° (lower half with wide gaps on sides)
+  const botStart = arcPoint(30)
+  const botEnd = arcPoint(150)
+  const botPath = `M ${botStart.x} ${botStart.y} A ${r} ${r} 0 0 1 ${botEnd.x} ${botEnd.y}`
+
+  // Bars outside the arcs
+  const barGap = size * 0.08
+  const leftBarX = cx - r - strokeWidth / 2 - barGap - barWidth
+  const rightBarX = cx + r + strokeWidth / 2 + barGap
 
   return (
     <motion.svg
@@ -34,10 +53,9 @@ export function GestoSymbol({ size = 32, color = '#10B981', animate = true, clas
       animate={animate ? { opacity: 1, scale: 1 } : undefined}
       transition={{ duration: 0.5, type: 'spring' }}
     >
-      {/* Glow filter */}
       <defs>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+        <filter id="symbolGlow">
+          <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
           <feMerge>
             <feMergeNode in="coloredBlur" />
             <feMergeNode in="SourceGraphic" />
@@ -45,62 +63,62 @@ export function GestoSymbol({ size = 32, color = '#10B981', animate = true, clas
         </filter>
       </defs>
 
-      {/* Arco superior (blanco/claro — bóveda) */}
+      {/* Top arc (white) */}
       <path
-        d={`M ${r * 0.35} ${r} A ${r * 0.45} ${r * 0.45} 0 0 1 ${r * 1.65} ${r}`}
+        d={topPath}
         fill="none"
         stroke="white"
         strokeWidth={strokeWidth}
         strokeLinecap="round"
-        opacity={0.9}
+        opacity={0.95}
       />
 
-      {/* Arco inferior (color vertical — empatía) */}
+      {/* Bottom arc (vertical color) */}
       <motion.path
-        d={`M ${r * 0.35} ${r} A ${r * 0.45} ${r * 0.45} 0 0 0 ${r * 1.65} ${r}`}
+        d={botPath}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
-        animate={animate ? { opacity: [0.7, 1, 0.7] } : undefined}
+        animate={animate ? { opacity: [0.8, 1, 0.8] } : undefined}
         transition={animate ? { duration: 3, repeat: Infinity, ease: 'easeInOut' } : undefined}
       />
 
-      {/* Punto central (núcleo IA) */}
+      {/* Center dot — large and prominent */}
       <motion.circle
-        cx={r}
-        cy={r}
+        cx={cx}
+        cy={cy}
         r={dotRadius}
         fill={color}
-        filter="url(#glow)"
-        animate={animate ? { scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] } : undefined}
+        filter="url(#symbolGlow)"
+        animate={animate ? { scale: [1, 1.15, 1], opacity: [0.85, 1, 0.85] } : undefined}
         transition={animate ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' } : undefined}
       />
 
-      {/* Barra izquierda */}
+      {/* Left bar */}
       <motion.rect
-        x={r * 0.12}
-        y={r - barHeight / 2}
+        x={leftBarX}
+        y={cy - barHeight / 2}
         width={barWidth}
         height={barHeight}
         rx={barWidth / 2}
         fill={color}
-        opacity={0.6}
-        animate={animate ? { opacity: [0.4, 0.8, 0.4] } : undefined}
-        transition={animate ? { duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 } : undefined}
+        opacity={0.7}
+        animate={animate ? { opacity: [0.5, 0.9, 0.5] } : undefined}
+        transition={animate ? { duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.3 } : undefined}
       />
 
-      {/* Barra derecha */}
+      {/* Right bar */}
       <motion.rect
-        x={size - r * 0.12 - barWidth}
-        y={r - barHeight / 2}
+        x={rightBarX}
+        y={cy - barHeight / 2}
         width={barWidth}
         height={barHeight}
         rx={barWidth / 2}
         fill={color}
-        opacity={0.6}
-        animate={animate ? { opacity: [0.4, 0.8, 0.4] } : undefined}
-        transition={animate ? { duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1 } : undefined}
+        opacity={0.7}
+        animate={animate ? { opacity: [0.5, 0.9, 0.5] } : undefined}
+        transition={animate ? { duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 } : undefined}
       />
     </motion.svg>
   )
