@@ -8,8 +8,8 @@ html {
 
 body {
   margin: 0;
-  background: #F8FAFB;
-  color: #1a1a2e;
+  background: #0C1220;
+  color: #fff;
   font-family: Inter, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -22,101 +22,70 @@ body {
   color: #fff;
 }
 
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.15);
-  border-radius: 999px;
-}
-
-/* Aurora background */
+/* Aurora background — vivid, not dead */
 .aurora-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  background: linear-gradient(135deg, #F0FDF9 0%, #F8FAFB 40%, #ECFDF5 70%, #F0FDFA 100%);
+  background: linear-gradient(160deg, #0C1220 0%, #0A1A2A 30%, #0C2020 60%, #0C1220 100%);
 }
 
 .aurora-bg::before {
   content: '';
   position: absolute;
-  top: -20%;
-  left: -10%;
+  top: -10%;
+  left: 20%;
   width: 60%;
-  height: 60%;
-  background: radial-gradient(ellipse, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+  height: 50%;
+  background: radial-gradient(ellipse, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
   filter: blur(60px);
-  animation: aurora1 12s ease-in-out infinite;
+  animation: aurora1 10s ease-in-out infinite;
 }
 
 .aurora-bg::after {
   content: '';
   position: absolute;
-  bottom: -10%;
-  right: -10%;
+  bottom: 10%;
+  right: 10%;
   width: 50%;
   height: 50%;
-  background: radial-gradient(ellipse, rgba(20, 184, 166, 0.08) 0%, transparent 70%);
+  background: radial-gradient(ellipse, rgba(20, 184, 166, 0.1) 0%, transparent 70%);
   filter: blur(80px);
-  animation: aurora2 15s ease-in-out infinite;
+  animation: aurora2 14s ease-in-out infinite;
 }
 
 @keyframes aurora1 {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-  33% { transform: translate(5%, 3%) scale(1.05); opacity: 0.8; }
-  66% { transform: translate(-3%, -2%) scale(0.95); opacity: 0.5; }
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+  50% { transform: translate(3%, 5%) scale(1.1); opacity: 1; }
 }
 
 @keyframes aurora2 {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-  50% { transform: translate(-5%, 5%) scale(1.1); opacity: 0.7; }
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  50% { transform: translate(-4%, -3%) scale(1.1); opacity: 0.9; }
 }
 
-/* Glass card */
+/* Glass card — visible, not invisible */
 .glass-card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(16, 30, 50, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.12);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.06),
-    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.04) inset;
 }
 
-.glass-card-hover:hover {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(16, 185, 129, 0.25);
-  box-shadow:
-    0 12px 40px rgba(16, 185, 129, 0.08),
-    0 1px 0 rgba(255, 255, 255, 0.9) inset;
-}
-
-/* CTA glow */
+/* CTA glow — impossible to miss */
 .cta-glow {
   position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 30px rgba(16, 185, 129, 0.35), 0 0 60px rgba(16, 185, 129, 0.15);
 }
 
 .cta-glow:hover {
-  box-shadow: 0 12px 40px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 40px rgba(16, 185, 129, 0.5), 0 0 80px rgba(16, 185, 129, 0.2);
 }
 
-.cta-glow::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
-  border-radius: inherit;
-}
-
-/* Noise texture */
-.noise-overlay {
-  display: none;
-}
+/* Noise overlay — disabled */
+.noise-overlay { display: none; }
