@@ -8,19 +8,21 @@ interface GestoSymbolProps {
 }
 
 /**
- * La "o" inteligente de Gestos — fiel al logo real.
- * Arcos con GAP visible entre ellos (no forman un círculo cerrado).
- * Arco superior blanco, arco inferior color de vertical.
- * Punto central prominente. Barras laterales FUERA de los arcos.
+ * La "o" inteligente de Gestos — réplica exacta del logo real.
+ * 
+ * Forma real:
+ * - Arco superior: CORTO y grueso, centrado arriba (como una ceja)
+ * - Arco inferior: LARGO, envuelve desde abajo-izquierda hasta abajo-derecha,
+ *   sus extremos suben a los costados (parece una C invertida o una U abierta)
+ * - Punto central: grande y sólido
+ * - NO hay barras laterales separadas
  */
 export function GestoSymbol({ size = 36, color = '#10B981', animate = true, className = '' }: GestoSymbolProps) {
   const cx = size / 2
   const cy = size / 2
-  const r = size * 0.34
-  const strokeWidth = size * 0.13
-  const dotRadius = size * 0.12
-  const barWidth = size * 0.07
-  const barHeight = size * 0.18
+  const r = size * 0.38
+  const strokeWidth = size * 0.14
+  const dotRadius = size * 0.13
 
   const toRad = (deg: number) => (deg * Math.PI) / 180
   const arcPoint = (angle: number) => ({
@@ -28,20 +30,16 @@ export function GestoSymbol({ size = 36, color = '#10B981', animate = true, clas
     y: cy + r * Math.sin(toRad(angle)),
   })
 
-  // Top arc: -150° to -30° (upper half with wide gaps on sides)
-  const topStart = arcPoint(-150)
-  const topEnd = arcPoint(-30)
+  // Top arc: SHORT, only ~80° (from -140° to -40°) — like an eyebrow
+  const topStart = arcPoint(-140)
+  const topEnd = arcPoint(-40)
   const topPath = `M ${topStart.x} ${topStart.y} A ${r} ${r} 0 0 1 ${topEnd.x} ${topEnd.y}`
 
-  // Bottom arc: 30° to 150° (lower half with wide gaps on sides)
-  const botStart = arcPoint(30)
-  const botEnd = arcPoint(150)
-  const botPath = `M ${botStart.x} ${botStart.y} A ${r} ${r} 0 0 1 ${botEnd.x} ${botEnd.y}`
-
-  // Bars outside the arcs
-  const barGap = size * 0.08
-  const leftBarX = cx - r - strokeWidth / 2 - barGap - barWidth
-  const rightBarX = cx + r + strokeWidth / 2 + barGap
+  // Bottom arc: LONG, ~220° (from 10° to 170° going the long way around bottom)
+  // This wraps from right side, down, to left side — like a C or open U
+  const botStart = arcPoint(-20)
+  const botEnd = arcPoint(200)
+  const botPath = `M ${botStart.x} ${botStart.y} A ${r} ${r} 0 1 1 ${botEnd.x} ${botEnd.y}`
 
   return (
     <motion.svg
@@ -63,7 +61,7 @@ export function GestoSymbol({ size = 36, color = '#10B981', animate = true, clas
         </filter>
       </defs>
 
-      {/* Top arc (white) */}
+      {/* Top arc — short, white (eyebrow/bóveda) */}
       <path
         d={topPath}
         fill="none"
@@ -73,14 +71,14 @@ export function GestoSymbol({ size = 36, color = '#10B981', animate = true, clas
         opacity={0.95}
       />
 
-      {/* Bottom arc (vertical color) */}
+      {/* Bottom arc — long, color (wraps around, extremes go up on sides) */}
       <motion.path
         d={botPath}
         fill="none"
         stroke={color}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
-        animate={animate ? { opacity: [0.8, 1, 0.8] } : undefined}
+        animate={animate ? { opacity: [0.85, 1, 0.85] } : undefined}
         transition={animate ? { duration: 3, repeat: Infinity, ease: 'easeInOut' } : undefined}
       />
 
@@ -91,34 +89,8 @@ export function GestoSymbol({ size = 36, color = '#10B981', animate = true, clas
         r={dotRadius}
         fill={color}
         filter="url(#symbolGlow)"
-        animate={animate ? { scale: [1, 1.15, 1], opacity: [0.85, 1, 0.85] } : undefined}
+        animate={animate ? { scale: [1, 1.12, 1], opacity: [0.9, 1, 0.9] } : undefined}
         transition={animate ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' } : undefined}
-      />
-
-      {/* Left bar */}
-      <motion.rect
-        x={leftBarX}
-        y={cy - barHeight / 2}
-        width={barWidth}
-        height={barHeight}
-        rx={barWidth / 2}
-        fill={color}
-        opacity={0.7}
-        animate={animate ? { opacity: [0.5, 0.9, 0.5] } : undefined}
-        transition={animate ? { duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.3 } : undefined}
-      />
-
-      {/* Right bar */}
-      <motion.rect
-        x={rightBarX}
-        y={cy - barHeight / 2}
-        width={barWidth}
-        height={barHeight}
-        rx={barWidth / 2}
-        fill={color}
-        opacity={0.7}
-        animate={animate ? { opacity: [0.5, 0.9, 0.5] } : undefined}
-        transition={animate ? { duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.8 } : undefined}
       />
     </motion.svg>
   )
