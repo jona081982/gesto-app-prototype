@@ -21,16 +21,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <img src="/images/logo-gestos-bv.png" alt="Gesto Copropiedad" className="h-7 w-auto" />
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-white font-bold text-[15px] tracking-tight">
-                Gest<span className="text-esmeralda">o</span>s
-              </span>
-              <span className="text-[10px] font-mono text-esmeralda/70 uppercase tracking-wider">
-                Copropiedad
-              </span>
-            </div>
+          <div className="flex items-center">
+            <img src="/images/logo-gestos-bv.png" alt="Gesto Copropiedad" className="h-10 w-auto" />
           </div>
           {/* Status dot */}
           <div className="flex items-center gap-1.5">
