@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GestoSymbol } from '../components/GestoSymbol'
 
 const steps = [
   'Leyendo tu descripción',
@@ -57,7 +56,7 @@ export function ProcessingPage() {
         />
         {/* Symbol centered */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <GestoSymbol size={40} animate={true} />
+          <img src="/images/logo-gesto-copropiedad.png" alt="" className="w-10 h-10 object-contain" />
         </div>
       </div>
 

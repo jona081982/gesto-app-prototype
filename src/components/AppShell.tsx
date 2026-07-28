@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { GestoSymbol } from './GestoSymbol'
 
 const navItems = [
   { label: 'Entrada', path: '/' },
@@ -23,7 +22,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <GestoSymbol size={28} animate={false} />
+            <img src="/images/logo-gesto-copropiedad.png" alt="Gesto Copropiedad" className="h-7 w-auto" />
             <div className="flex items-baseline gap-1.5">
               <span className="text-white font-bold text-[15px] tracking-tight">
                 Gest<span className="text-esmeralda">o</span>s
