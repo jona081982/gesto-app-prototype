@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <img src="/images/logo-gestos-bv.png" alt="Gesto Copropiedad" className="h-10 w-auto" />
+            <img src="/images/logo-gestos-bv.png" alt="Gesto Copropiedad" className="h-16 w-auto" />
           </div>
           {/* Status dot */}
           <div className="flex items-center gap-1.5">
