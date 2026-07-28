@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
-import { Lock, ArrowRight, CreditCard } from 'lucide-react'
+import { Lock, CreditCard } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 
 export function PaymentPage() {
   const navigate = useNavigate()
+  const [consent, setConsent] = useState(false)
 
   return (
     <motion.div
@@ -27,13 +29,26 @@ export function PaymentPage() {
         <input
           type="email"
           placeholder="tu@email.com"
-          className="w-full h-11 px-4 rounded-xl bg-surface border border-white/[0.08] text-white text-sm placeholder:text-white/30 focus:border-esmeralda/50 transition-all"
+          className="w-full h-11 px-4 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder:text-white/20 focus:border-esmeralda/50 transition-all outline-none"
         />
       </div>
 
+      {/* Consent checkbox */}
+      <label className="flex items-start gap-3 cursor-pointer group">
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/[0.04] text-esmeralda focus:ring-esmeralda/30 cursor-pointer"
+        />
+        <span className="text-[12px] text-white/40 leading-relaxed group-hover:text-white/60 transition-colors">
+          Acepto que mis datos sean procesados con inteligencia artificial (OpenAI) para generar los documentos de mi caso. Los datos se eliminan automáticamente en 30 días.{' '}
+          <a href="/privacidad" className="text-esmeralda/70 hover:text-esmeralda underline">Leer más</a>
+        </span>
+      </label>
 
       {/* Payment box */}
-      <div className="bg-surface rounded-xl border border-white/[0.08] p-5 space-y-4">
+      <div className="bg-white/[0.03] rounded-2xl border border-white/[0.06] p-5 space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-white/60 text-sm">Diagnóstico completo + documentos</span>
           <span className="text-white font-bold text-lg">$14.990</span>
@@ -45,10 +60,15 @@ export function PaymentPage() {
           <p>✓ Escalamiento incluido 90 días</p>
         </div>
 
-        {/* Simulated payment button */}
+        {/* Payment button — disabled if no consent */}
         <button
-          onClick={() => navigate('/entrega')}
-          className="w-full py-3.5 rounded-xl bg-esmeralda hover:bg-emerald-400 text-white font-semibold text-[15px] flex items-center justify-center gap-2 transition-all shadow-[0_4px_20px_rgba(16,185,129,0.3)]"
+          onClick={() => consent && navigate('/entrega')}
+          disabled={!consent}
+          className={`w-full py-3.5 rounded-xl font-semibold text-[15px] flex items-center justify-center gap-2 transition-all ${
+            consent
+              ? 'bg-esmeralda hover:bg-emerald-400 text-white shadow-[0_4px_20px_rgba(16,185,129,0.3)] cursor-pointer'
+              : 'bg-white/[0.05] text-white/20 cursor-not-allowed'
+          }`}
         >
           <CreditCard size={16} />
           Pagar $14.990
@@ -56,7 +76,7 @@ export function PaymentPage() {
       </div>
 
       {/* Security */}
-      <div className="flex items-center justify-center gap-2 text-[11px] text-white/25">
+      <div className="flex items-center justify-center gap-2 text-[11px] text-white/20">
         <Lock size={11} />
         <span>Pago seguro. No almacenamos datos de tarjeta.</span>
       </div>

@@ -172,6 +172,8 @@ export function EntryPage() {
         {step === 0 && (
           <p className="text-center text-[11px] text-white/20">
             Sin tarjeta · Sin cuenta · Resultado en segundos
+            <br />
+            <span className="text-white/15">Al enviar, aceptas los <a href="/terminos" className="text-esmeralda/50 hover:text-esmeralda underline">Términos</a> y la <a href="/privacidad" className="text-esmeralda/50 hover:text-esmeralda underline">Política de Privacidad</a>.</span>
           </p>
         )}
       </div>
