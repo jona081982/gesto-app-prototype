@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 px-4 pt-4">
         <div className="max-w-lg mx-auto glass-card rounded-2xl px-5 h-16 flex items-center justify-between">
-          <img src="/images/logo-gestos-bv.png" alt="Gesto Copropiedad" className="h-9 w-auto" />
+          <img src="/images/logo-gestos-bv.png" alt="Gesto Copropiedad" className="h-14 w-auto" />
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-esmeralda/[0.1] border border-esmeralda/25">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-esmeralda opacity-50" />

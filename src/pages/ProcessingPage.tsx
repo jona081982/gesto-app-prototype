@@ -60,7 +60,7 @@ export function ProcessingPage() {
           <motion.img
             src="/images/elemento-gestos-bv.png"
             alt=""
-            className="w-14 h-14 object-contain"
+            className="w-20 h-20 object-contain"
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           />
