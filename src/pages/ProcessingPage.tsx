@@ -56,7 +56,7 @@ export function ProcessingPage() {
         />
         {/* Symbol centered */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <img src="/images/logo-gesto-copropiedad.png" alt="" className="w-10 h-10 object-contain" />
+          <img src="/images/elemento-gestos-bv.png" alt="" className="w-10 h-10 object-contain" />
         </div>
       </div>
 
