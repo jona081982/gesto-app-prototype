@@ -33,6 +33,7 @@ export function DeliveryPage() {
           'Informe de Diagnóstico Legal',
           'Carta de Impugnación de Multa',
           'Solicitud de Rendición de Cuentas',
+          'Objeción a Cobro Extraordinario',
           'Guía de Acción',
         ].map((doc) => (
           <div key={doc} className="flex items-center justify-between bg-surface rounded-xl border border-white/[0.06] px-4 py-3">
