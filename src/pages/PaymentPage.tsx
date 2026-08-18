@@ -42,7 +42,8 @@ export function PaymentPage() {
           className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/[0.04] text-esmeralda focus:ring-esmeralda/30 cursor-pointer"
         />
         <span className="text-[12px] text-white/40 leading-relaxed group-hover:text-white/60 transition-colors">
-          Acepto que mis datos sean procesados con inteligencia artificial (OpenAI) para generar los documentos de mi caso. Los datos se eliminan automáticamente en 30 días.{' '}
+          Acepto que mis datos sean procesados con inteligencia artificial (DeepSeek) para generar los documentos de mi caso. Los datos se eliminan automáticamente en 30 días.
+{' '}
           <a href="/privacidad" className="text-esmeralda/70 hover:text-esmeralda underline">Leer más</a>
         </span>
       </label>
