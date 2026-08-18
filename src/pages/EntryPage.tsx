@@ -1,214 +1,206 @@
-import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, MapPin, ArrowRight, MessageSquare, Paperclip, CheckCircle, FileCheck } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Upload, ArrowRight, MessageSquare, FileCheck, X, AlertCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useRef, useState } from 'react'
 
-const steps = [
-  { id: 'describe', label: 'Describe' },
-  { id: 'evidencia', label: 'Evidencia' },
-  { id: 'ubicacion', label: 'Ubicación' },
+// Guía de evidencia útil (ADENDA_002 §6.1): no son categorías obligatorias, el usuario
+// sube lo que tenga. Estos chips solo orientan sobre qué es útil adjuntar.
+const evidenceHints = [
+  'Boleta de gasto común',
+  'Notificación de multa',
+  'Reglamento de copropiedad',
+  'Comunicados del comité',
+  'Comprobantes de pago',
+  'Fotos de daños/situaciones',
+  'Conversaciones (WhatsApp, email)',
+  'Actas de asamblea',
 ]
+
+const MAX_FILES = 10
+const MAX_FILE_SIZE_MB = 10
+const ACCEPTED_FORMATS = '.jpg,.jpeg,.png,.webp,.pdf'
 
 export function EntryPage() {
   const navigate = useNavigate()
-  const [step, setStep] = useState(0)
+  const [description, setDescription] = useState('')
+  const [comuna, setComuna] = useState('')
   const [files, setFiles] = useState<File[]>([])
+  const [fileError, setFileError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const next = () => {
-    if (step < 2) setStep(step + 1)
-    else navigate('/procesando', { state: { hasFiles: files.length > 0 } })
-  }
+  const isValid = description.length >= 50 && comuna.trim().length > 0
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) setFiles(Array.from(e.target.files))
+    if (!e.target.files) return
+    const incoming = Array.from(e.target.files)
+    const combined = [...files, ...incoming]
+
+    if (combined.length > MAX_FILES) {
+      setFileError(`Máximo ${MAX_FILES} archivos por caso.`)
+      return
+    }
+
+    const tooLarge = incoming.find((f) => f.size > MAX_FILE_SIZE_MB * 1024 * 1024)
+    if (tooLarge) {
+      setFileError(`"${tooLarge.name}" supera ${MAX_FILE_SIZE_MB}MB. Sube un archivo más liviano.`)
+      return
+    }
+
+    setFileError('')
+    setFiles(combined)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
-  const back = () => {
-    if (step > 0) setStep(step - 1)
+  const removeFile = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index))
+    setFileError('')
+  }
+
+  const handleSubmit = () => {
+    if (!isValid) return
+    navigate('/procesando', { state: { hasFiles: files.length > 0 } })
   }
 
   return (
-    <div className="min-h-[70vh] flex flex-col justify-between">
-      {/* Progress */}
-      <div className="mb-8">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          {steps.map((s, i) => (
-            <div key={s.id} className="flex items-center gap-2">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[12px] font-bold transition-all duration-500 ${
-                i < step ? 'bg-esmeralda text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' :
-                i === step ? 'bg-esmeralda/20 text-esmeralda border-2 border-esmeralda shadow-[0_0_20px_rgba(16,185,129,0.2)]' :
-                'bg-white/[0.05] text-white/30 border border-white/[0.1]'
-              }`}>
-                {i < step ? <CheckCircle size={15} /> : i + 1}
-              </div>
-              {i < 2 && (
-                <div className={`w-10 h-0.5 rounded-full transition-all duration-500 ${
-                  i < step ? 'bg-esmeralda shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-white/[0.08]'
-                }`} />
-              )}
-            </div>
-          ))}
+    <div className="w-full space-y-6">
+      {/* Header */}
+      <div className="text-center">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-esmeralda to-teal-500 flex items-center justify-center mx-auto mb-5 shadow-[0_8px_30px_rgba(16,185,129,0.3)]">
+          <MessageSquare size={28} className="text-white" />
         </div>
+        <h2 className="text-[26px] font-extrabold text-white leading-tight">
+          Cuéntanos qué te pasa
+        </h2>
+        <p className="text-[14px] text-white/50 mt-2">
+          Con tus palabras. Sin tecnicismos. La IA entiende.
+        </p>
       </div>
 
-      {/* Steps */}
-      <div className="flex-1 flex items-center">
-        <AnimatePresence mode="wait">
-          {step === 0 && (
-            <motion.div
-              key="step0"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className="w-full space-y-6"
+      {/* Descripción */}
+      <div className="space-y-1.5">
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Me pusieron una multa de $80.000 por dejar la bicicleta en el pasillo, pero nunca me avisaron antes y en el reglamento no dice nada de eso..."
+          className="w-full h-36 px-5 py-4 rounded-2xl bg-white/[0.06] border border-white/[0.1] text-white text-[15px] placeholder:text-white/25 resize-none focus:border-esmeralda/50 focus:bg-white/[0.08] focus:shadow-[0_0_30px_rgba(16,185,129,0.08)] transition-all leading-relaxed outline-none"
+        />
+        <p className={`text-[12px] ${description.length >= 50 ? 'text-esmeralda' : 'text-white/25'}`}>
+          {description.length < 50 ? `Mínimo 50 caracteres (${description.length}/50)` : `Listo · ${description.length} caracteres`}
+        </p>
+      </div>
+
+      {/* Comuna */}
+      <div className="space-y-1.5">
+        <label className="text-[12px] text-white/40 font-medium px-1">
+          ¿Dónde está tu edificio? (determina el tribunal competente)
+        </label>
+        <input
+          type="text"
+          value={comuna}
+          onChange={(e) => setComuna(e.target.value)}
+          placeholder="Ej: Providencia, Santiago, Las Condes..."
+          className="w-full h-14 px-5 rounded-2xl bg-white/[0.06] border border-white/[0.1] text-white text-[15px] placeholder:text-white/25 focus:border-esmeralda/50 focus:bg-white/[0.08] transition-all outline-none"
+        />
+      </div>
+
+      {/* Evidencia */}
+      <div className="space-y-2.5">
+        <label className="text-[12px] text-white/40 font-medium px-1">
+          Evidencia (opcional, pero mejora el diagnóstico)
+        </label>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={ACCEPTED_FORMATS}
+          multiple
+          className="hidden"
+          onChange={handleFileSelect}
+        />
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="border-2 border-dashed border-esmeralda/20 rounded-2xl p-6 text-center hover:border-esmeralda/40 hover:bg-esmeralda/[0.03] transition-all duration-500 cursor-pointer group"
+        >
+          <div className="w-12 h-12 rounded-full bg-esmeralda/10 border border-esmeralda/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-esmeralda/20 group-hover:scale-110 transition-all duration-500">
+            <Upload size={20} className="text-esmeralda/60 group-hover:text-esmeralda transition-colors" />
+          </div>
+          <p className="text-[14px] text-white/40 group-hover:text-white/70 transition-colors font-medium">
+            Toca para subir fotos, boletas, multas, reglamento, capturas...
+          </p>
+          <p className="text-[11px] text-white/20 mt-1.5">
+            JPG · PNG · WEBP · PDF · Máx {MAX_FILE_SIZE_MB}MB por archivo · Máx {MAX_FILES} archivos
+          </p>
+        </div>
+
+        {/* Chips guía de tipos de evidencia útil */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {evidenceHints.map((hint) => (
+            <span
+              key={hint}
+              className="text-[10.5px] px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/35"
             >
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-esmeralda to-teal-500 flex items-center justify-center mx-auto mb-5 shadow-[0_8px_30px_rgba(16,185,129,0.3)]">
-                  <MessageSquare size={28} className="text-white" />
-                </div>
-                <h2 className="text-[26px] font-extrabold text-white leading-tight">
-                  Cuéntanos qué te pasa
-                </h2>
-                <p className="text-[14px] text-white/50 mt-2">
-                  Con tus palabras. Sin tecnicismos. La IA entiende.
-                </p>
-              </div>
+              {hint}
+            </span>
+          ))}
+        </div>
 
-              <textarea
-                placeholder="Me pusieron una multa de $80.000 por dejar la bicicleta en el pasillo, pero nunca me avisaron antes y en el reglamento no dice nada de eso..."
-                className="w-full h-40 px-5 py-4 rounded-2xl bg-white/[0.06] border border-white/[0.1] text-white text-[15px] placeholder:text-white/25 resize-none focus:border-esmeralda/50 focus:bg-white/[0.08] focus:shadow-[0_0_30px_rgba(16,185,129,0.08)] transition-all leading-relaxed outline-none"
-              />
-            </motion.div>
-          )}
+        {/* Error de validación de archivos */}
+        {fileError && (
+          <div className="flex items-center gap-2 text-[12px] text-alert px-1">
+            <AlertCircle size={13} />
+            {fileError}
+          </div>
+        )}
 
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className="w-full space-y-6"
-            >
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center mx-auto mb-5 shadow-[0_8px_30px_rgba(20,184,166,0.3)]">
-                  <Paperclip size={28} className="text-white" />
-                </div>
-                <h2 className="text-[26px] font-extrabold text-white leading-tight">
-                  ¿Tienes evidencia?
-                </h2>
-                <p className="text-[14px] text-white/50 mt-2">
-                  Fotos de boletas, multas, avisos o capturas. Es opcional.
-                </p>
-              </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".jpg,.jpeg,.png,.pdf"
-                multiple
-                className="hidden"
-                onChange={handleFileSelect}
-              />
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-esmeralda/20 rounded-3xl p-10 text-center hover:border-esmeralda/40 hover:bg-esmeralda/[0.03] transition-all duration-500 cursor-pointer group"
+        {/* Lista de archivos seleccionados */}
+        {files.length > 0 && (
+          <div className="space-y-1.5 pt-1">
+            {files.map((file, i) => (
+              <motion.div
+                key={`${file.name}-${i}`}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center justify-between gap-2 bg-esmeralda/[0.06] border border-esmeralda/15 rounded-xl px-3 py-2"
               >
-                {files.length > 0 ? (
-                  <>
-                    <div className="w-14 h-14 rounded-full bg-esmeralda/20 border border-esmeralda/30 flex items-center justify-center mx-auto mb-4">
-                      <FileCheck size={22} className="text-esmeralda" />
-                    </div>
-                    <p className="text-[14px] text-white/70 font-medium">
-                      {files.length} archivo{files.length > 1 ? 's' : ''} listo{files.length > 1 ? 's' : ''}
-                    </p>
-                    <p className="text-[11px] text-white/30 mt-2 truncate">
-                      {files.map((f) => f.name).join(', ')}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-14 h-14 rounded-full bg-esmeralda/10 border border-esmeralda/20 flex items-center justify-center mx-auto mb-4 group-hover:bg-esmeralda/20 group-hover:scale-110 group-hover:shadow-[0_0_25px_rgba(16,185,129,0.2)] transition-all duration-500">
-                      <Upload size={22} className="text-esmeralda/60 group-hover:text-esmeralda transition-colors" />
-                    </div>
-                    <p className="text-[14px] text-white/40 group-hover:text-white/70 transition-colors font-medium">
-                      Toca para subir archivos
-                    </p>
-                    <p className="text-[11px] text-white/20 mt-2">
-                      JPG · PNG · PDF · Máx 10MB
-                    </p>
-                  </>
-                )}
-              </div>
-
-              <button
-                onClick={next}
-                className="w-full py-3 text-center text-[13px] text-white/30 hover:text-esmeralda transition-colors"
-              >
-                Omitir este paso →
-              </button>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-              className="w-full space-y-6"
-            >
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-esmeralda flex items-center justify-center mx-auto mb-5 shadow-[0_8px_30px_rgba(6,182,212,0.3)]">
-                  <MapPin size={28} className="text-white" />
+                <div className="flex items-center gap-2 min-w-0">
+                  <FileCheck size={14} className="text-esmeralda shrink-0" />
+                  <span className="text-[12.5px] text-white/70 truncate">{file.name}</span>
                 </div>
-                <h2 className="text-[26px] font-extrabold text-white leading-tight">
-                  ¿Dónde está tu edificio?
-                </h2>
-                <p className="text-[14px] text-white/50 mt-2">
-                  La comuna determina el tribunal competente.
-                </p>
-              </div>
-
-              <input
-                type="text"
-                placeholder="Ej: Providencia, Santiago, Las Condes..."
-                className="w-full h-14 px-5 rounded-2xl bg-white/[0.06] border border-white/[0.1] text-white text-[16px] placeholder:text-white/25 focus:border-esmeralda/50 focus:bg-white/[0.08] transition-all outline-none text-center"
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    removeFile(i)
+                  }}
+                  className="text-white/30 hover:text-alert transition-colors shrink-0"
+                >
+                  <X size={14} />
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* CTA */}
-      <div className="mt-8 space-y-3">
+      <div className="pt-2 space-y-3">
         <button
-          onClick={next}
-          className="cta-glow w-full h-[56px] rounded-2xl bg-gradient-to-r from-esmeralda via-emerald-500 to-teal-500 text-white font-bold text-[15px] flex items-center justify-center gap-2.5 hover:-translate-y-[2px] active:translate-y-0 transition-transform"
+          onClick={handleSubmit}
+          disabled={!isValid}
+          className={`cta-glow w-full h-[56px] rounded-2xl font-bold text-[15px] flex items-center justify-center gap-2.5 transition-all ${
+            isValid
+              ? 'bg-gradient-to-r from-esmeralda via-emerald-500 to-teal-500 text-white hover:-translate-y-[2px] active:translate-y-0 cursor-pointer'
+              : 'bg-white/[0.05] text-white/20 cursor-not-allowed'
+          }`}
         >
-          {step < 2 ? 'Continuar' : 'Analizar mi caso — GRATIS'}
+          Analizar mi caso — GRATIS
           <ArrowRight size={16} />
         </button>
 
-        {step > 0 && (
-          <button
-            onClick={back}
-            className="w-full py-2 text-[13px] text-white/30 hover:text-white/60 transition-colors"
-          >
-            ← Volver
-          </button>
-        )}
-
-        {step === 0 && (
-          <p className="text-center text-[11px] text-white/20">
-            Sin tarjeta · Sin cuenta · Resultado en segundos
-            <br />
-            <span className="text-white/15">Al enviar, aceptas los <a href="/terminos" className="text-esmeralda/50 hover:text-esmeralda underline">Términos</a> y la <a href="/privacidad" className="text-esmeralda/50 hover:text-esmeralda underline">Política de Privacidad</a>.</span>
-          </p>
-        )}
+        <p className="text-center text-[11px] text-white/20">
+          Sin tarjeta · Sin cuenta · Resultado en segundos
+          <br />
+          <span className="text-white/15">Al enviar, aceptas los <a href="/terminos" className="text-esmeralda/50 hover:text-esmeralda underline">Términos</a> y la <a href="/privacidad" className="text-esmeralda/50 hover:text-esmeralda underline">Política de Privacidad</a>.</span>
+        </p>
       </div>
     </div>
   )
