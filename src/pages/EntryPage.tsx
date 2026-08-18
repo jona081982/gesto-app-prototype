@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, MapPin, ArrowRight, MessageSquare, Paperclip, CheckCircle } from 'lucide-react'
+import { Upload, MapPin, ArrowRight, MessageSquare, Paperclip, CheckCircle, FileCheck } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 const steps = [
   { id: 'describe', label: 'Describe' },
@@ -12,10 +12,16 @@ const steps = [
 export function EntryPage() {
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
+  const [files, setFiles] = useState<File[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const next = () => {
     if (step < 2) setStep(step + 1)
-    else navigate('/procesando')
+    else navigate('/procesando', { state: { hasFiles: files.length > 0 } })
+  }
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) setFiles(Array.from(e.target.files))
   }
 
   const back = () => {
@@ -98,16 +104,43 @@ export function EntryPage() {
                 </p>
               </div>
 
-              <div className="border-2 border-dashed border-esmeralda/20 rounded-3xl p-10 text-center hover:border-esmeralda/40 hover:bg-esmeralda/[0.03] transition-all duration-500 cursor-pointer group">
-                <div className="w-14 h-14 rounded-full bg-esmeralda/10 border border-esmeralda/20 flex items-center justify-center mx-auto mb-4 group-hover:bg-esmeralda/20 group-hover:scale-110 group-hover:shadow-[0_0_25px_rgba(16,185,129,0.2)] transition-all duration-500">
-                  <Upload size={22} className="text-esmeralda/60 group-hover:text-esmeralda transition-colors" />
-                </div>
-                <p className="text-[14px] text-white/40 group-hover:text-white/70 transition-colors font-medium">
-                  Toca para subir archivos
-                </p>
-                <p className="text-[11px] text-white/20 mt-2">
-                  JPG · PNG · PDF · Máx 10MB
-                </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                multiple
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-esmeralda/20 rounded-3xl p-10 text-center hover:border-esmeralda/40 hover:bg-esmeralda/[0.03] transition-all duration-500 cursor-pointer group"
+              >
+                {files.length > 0 ? (
+                  <>
+                    <div className="w-14 h-14 rounded-full bg-esmeralda/20 border border-esmeralda/30 flex items-center justify-center mx-auto mb-4">
+                      <FileCheck size={22} className="text-esmeralda" />
+                    </div>
+                    <p className="text-[14px] text-white/70 font-medium">
+                      {files.length} archivo{files.length > 1 ? 's' : ''} listo{files.length > 1 ? 's' : ''}
+                    </p>
+                    <p className="text-[11px] text-white/30 mt-2 truncate">
+                      {files.map((f) => f.name).join(', ')}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-14 h-14 rounded-full bg-esmeralda/10 border border-esmeralda/20 flex items-center justify-center mx-auto mb-4 group-hover:bg-esmeralda/20 group-hover:scale-110 group-hover:shadow-[0_0_25px_rgba(16,185,129,0.2)] transition-all duration-500">
+                      <Upload size={22} className="text-esmeralda/60 group-hover:text-esmeralda transition-colors" />
+                    </div>
+                    <p className="text-[14px] text-white/40 group-hover:text-white/70 transition-colors font-medium">
+                      Toca para subir archivos
+                    </p>
+                    <p className="text-[11px] text-white/20 mt-2">
+                      JPG · PNG · PDF · Máx 10MB
+                    </p>
+                  </>
+                )}
               </div>
 
               <button

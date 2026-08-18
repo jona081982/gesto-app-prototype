@@ -38,28 +38,32 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      {/* Dev nav */}
-      <nav className="fixed top-[88px] left-0 right-0 z-40 px-4">
-        <div className="max-w-lg mx-auto bg-[#0C1220]/80 backdrop-blur-md rounded-xl border border-white/[0.06] px-2.5 py-1.5 flex items-center gap-0.5 overflow-x-auto">
-          <span className="text-[7px] font-mono text-esmeralda/40 mr-1.5 shrink-0 uppercase tracking-widest">Dev</span>
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`shrink-0 text-[9px] px-2 py-1 rounded-md transition-all ${
-                pathname === item.path
-                  ? 'bg-esmeralda/20 text-esmeralda font-semibold'
-                  : 'text-white/30 hover:text-white/60'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-      </nav>
+      {/* Dev nav — solo visible en modo desarrollo (npm run dev). Se oculta automáticamente
+          en cualquier build de producción (npm run build), incluyendo demos externas
+          desplegadas desde Bolt. Ver ADENDA_006_AUDITORIA_PROTOTIPO_APP.md, hallazgo menor #8. */}
+      {import.meta.env.DEV && (
+        <nav className="fixed top-[88px] left-0 right-0 z-40 px-4">
+          <div className="max-w-lg mx-auto bg-[#0C1220]/80 backdrop-blur-md rounded-xl border border-white/[0.06] px-2.5 py-1.5 flex items-center gap-0.5 overflow-x-auto">
+            <span className="text-[7px] font-mono text-esmeralda/40 mr-1.5 shrink-0 uppercase tracking-widest">Dev</span>
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`shrink-0 text-[9px] px-2 py-1 rounded-md transition-all ${
+                  pathname === item.path
+                    ? 'bg-esmeralda/20 text-esmeralda font-semibold'
+                    : 'text-white/30 hover:text-white/60'
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+      )}
 
       {/* Content */}
-      <main className="relative z-10 pt-36 min-h-screen flex items-start justify-center px-5 pb-16">
+      <main className={`relative z-10 min-h-screen flex items-start justify-center px-5 pb-16 ${import.meta.env.DEV ? 'pt-36' : 'pt-28'}`}>
         <div className="w-full max-w-[420px]">
           {children}
         </div>

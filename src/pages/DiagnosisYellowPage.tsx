@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
 import { AlertCircle, Upload, ArrowRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 
 export function DiagnosisYellowPage() {
   const navigate = useNavigate()
+  const [files, setFiles] = useState<File[]>([])
 
   return (
     <motion.div
@@ -44,10 +46,19 @@ export function DiagnosisYellowPage() {
       </div>
 
       {/* Upload zone */}
-      <div className="border border-dashed border-warning/20 rounded-xl p-5 text-center hover:border-warning/40 transition-colors cursor-pointer group">
+      <label className="border border-dashed border-warning/20 rounded-xl p-5 text-center hover:border-warning/40 transition-colors cursor-pointer group block">
+        <input
+          type="file"
+          accept=".jpg,.jpeg,.png,.pdf"
+          multiple
+          className="hidden"
+          onChange={(e) => e.target.files && setFiles(Array.from(e.target.files))}
+        />
         <Upload size={20} className="mx-auto text-white/30 group-hover:text-warning/60 transition-colors mb-2" />
-        <p className="text-sm text-white/40">Subir documentos adicionales</p>
-      </div>
+        <p className="text-sm text-white/40">
+          {files.length > 0 ? `${files.length} archivo(s) seleccionado(s)` : 'Subir documentos adicionales'}
+        </p>
+      </label>
 
       {/* Text area */}
       <textarea
@@ -57,7 +68,7 @@ export function DiagnosisYellowPage() {
 
       {/* CTA */}
       <button
-        onClick={() => navigate('/procesando')}
+        onClick={() => navigate('/procesando', { state: { hasFiles: files.length > 0 } })}
         className="w-full py-3.5 rounded-xl bg-warning/90 hover:bg-warning text-white font-semibold text-[15px] flex items-center justify-center gap-2 transition-all"
       >
         Volver a analizar

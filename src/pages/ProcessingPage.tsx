@@ -1,11 +1,10 @@
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
-const steps = [
+const baseSteps = [
   'Leyendo tu descripción',
-  'Analizando documentos adjuntos',
   'Contrastando con la Ley 21.442',
   'Verificando artículos aplicables',
   'Evaluando suficiencia de evidencia',
@@ -14,6 +13,15 @@ const steps = [
 export function ProcessingPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const navigate = useNavigate()
+  const location = useLocation()
+  const hasFiles = Boolean((location.state as { hasFiles?: boolean } | null)?.hasFiles)
+
+  // El paso de "documentos adjuntos" solo aparece si el usuario realmente subió evidencia.
+  // Mostrarlo siempre como completado, sin importar si hay archivos, sería una sobre-promesa
+  // (ver ADENDA_006_AUDITORIA_PROTOTIPO_APP.md, hallazgo crítico #4).
+  const steps = hasFiles
+    ? [baseSteps[0], 'Analizando documentos adjuntos', ...baseSteps.slice(1)]
+    : baseSteps
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -76,7 +84,7 @@ export function ProcessingPage() {
         >
           Analizando tu caso
         </motion.h2>
-        <p className="text-[13px] text-white/30">9 cuerpos legales · Ley 21.442 · DS 75 · JPL</p>
+        <p className="text-[13px] text-white/30">Ley 21.442 de Copropiedad Inmobiliaria</p>
       </div>
 
       {/* Steps */}
