@@ -155,7 +155,7 @@ export function DiagnosisGreenPage() {
           <ArrowRight size={16} />
         </button>
         <p className="text-center text-[12px] text-white/25 mt-3">
-          Recupera ~$620.000 por $14.990 · Sin suscripción obligatoria
+          Hasta ~$620.000 en disputa por $14.990 · Sin suscripción obligatoria
         </p>
       </motion.div>
     </motion.div>
